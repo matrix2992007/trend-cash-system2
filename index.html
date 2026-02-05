@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trend Cash App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: #0b141a;
+            --card-bg: #1c2a35;
+            --gold: #f1c40f;
+            --accent: #e67e22;
+            --white: #ffffff;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        .header {
+            width: 100%;
+            background: var(--card-bg);
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 2px solid var(--gold);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            width: 90%;
+            margin-top: 20px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 15px;
+        }
+        .stat-item { text-align: center; }
+        .stat-value {
+            display: block;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--gold);
+        }
+        .wheel-box {
+            margin: 40px 0;
+            position: relative;
+            text-align: center;
+        }
+        #wheel-img {
+            width: 280px;
+            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
+        }
+        .spin-button {
+            background: linear-gradient(45deg, var(--gold), var(--accent));
+            border: none;
+            color: #000;
+            padding: 15px 50px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 30px;
+            margin-top: 20px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4);
+        }
+        .progress-card {
+            width: 85%;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        .progress-bar {
+            background: #2c3e50;
+            height: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: var(--gold);
+            height: 100%;
+            width: 40%; /* دي هتتغير بالـ JS */
+            transition: width 1s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1 style="margin:0; font-size: 24px;">تريند كاش 🎡</h1>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-item">
+            <span class="stat-value" id="user-balance">0.00</span>
+            <span style="font-size: 14px;">الرصيد (ج.م)</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value" id="user-refs">0</span>
+            <span style="font-size: 14px;">الإحالات</span>
+        </div>
+    </div>
+
+    <div class="wheel-box">
+        <img src="https://i.imgur.com/7W8bHkN.png" id="wheel-img">
+        <br>
+        <button class="spin-button" onclick="startSpin()">لف العجلة</button>
+    </div>
+
+    <div class="progress-card">
+        <div style="display: flex; justify-content: space-between; font-weight: bold;">
+            <span>الهدف القادم</span>
+            <span id="goal-label">0 / 13</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="p-fill"></div>
+        </div>
+        <p style="font-size: 12px; color: #95a5a6; text-align: center;">* يتم خصم 1 جنيه رسوم سحب لدعم تشغيل البوت.</p>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // يفتح التطبيق بكامل الشاشة
+
+        function startSpin() {
+            const wheel = document.getElementById('wheel-img');
+            let randomDeg = Math.floor(Math.random() * 360) + 3600; // 10 لفات كاملة + عشوائي
+            wheel.style.transform = `rotate(${randomDeg}deg)`;
+            
+            setTimeout(() => {
+                tg.showAlert("مبروك! ربحت جائزة، سيتم إضافتها لرصيدك بعد المراجعة.");
+            }, 4500);
+        }
+
+        // تحديث البيانات (مثال تجريبي)
+        function updateUI(current, target, balance) {
+            document.getElementById('user-refs').innerText = current;
+            document.getElementById('user-balance').innerText = balance;
+            document.getElementById('goal-label').innerText = `${current} / ${target}`;
+            let percent = (current / target) * 100;
+            document.getElementById('p-fill').style.width = percent + "%";
+        }
+        
+        // دي قيم تجريبية عشان تشوف الشكل
+        updateUI(5, 13, "0.00");
+    </script>
+</body>
+</html>
