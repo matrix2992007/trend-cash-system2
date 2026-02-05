@@ -3,121 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trend Cash</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            background-color: #080f14; /* الكحلي الغامق جداً */
-            color: #ffffff;
-            font-family: 'Cairo', sans-serif;
+            background-color: #0c161d; /* لون كحلي غامق جداً */
+            color: white;
+            font-family: sans-serif;
             margin: 0; padding: 0;
             display: flex; flex-direction: column; align-items: center;
         }
-        /* الهيدر اللي فيه اليوزر ورصيده */
-        .user-card {
-            width: 90%; background: #15202b;
-            margin-top: 15px; border-radius: 12px;
-            padding: 15px; border: 1px solid #1da1f233;
-            display: flex; justify-content: space-between; align-items: center;
+        /* كارت الرصيد */
+        .top-card {
+            width: 90%; background: #1a2730;
+            margin-top: 20px; border-radius: 15px;
+            padding: 20px; box-sizing: border-box;
+            border-bottom: 3px solid #f1c40f; /* خط ذهبي */
         }
-        .balance-title { color: #8899a6; font-size: 14px; }
-        .balance-amount { color: #f1c40f; font-size: 22px; font-weight: bold; }
-
-        /* سكشن عجلة الحظ */
-        .wheel-container {
-            position: relative; margin: 30px 0;
-            width: 300px; height: 300px;
-        }
-        #main-wheel { width: 100%; transition: transform 4s cubic-bezier(0.1, 0, 0.1, 1); }
-        .pointer {
-            position: absolute; top: -10px; left: 50%;
-            transform: translateX(-50%); width: 40px; z-index: 10;
+        .row { display: flex; justify-content: space-between; align-items: center; }
+        .gold { color: #f1c40f; font-weight: bold; font-size: 22px; }
+        
+        /* مكان العجلة (تصميم بسيط) */
+        .wheel-space {
+            margin: 40px 0; width: 220px; height: 220px;
+            border-radius: 50%; border: 8px solid #f1c40f;
+            display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(#1a2730, #0c161d);
+            font-size: 50px; box-shadow: 0 0 20px #f1c40f44;
         }
 
-        /* زرار اللف الذهبي */
-        .spin-btn {
-            background: #f1c40f; color: #000;
-            border: none; width: 85%; padding: 15px;
-            border-radius: 50px; font-size: 18px; font-weight: bold;
-            box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);
-            cursor: pointer; margin-bottom: 20px;
+        /* الزرار الكبير */
+        .main-btn {
+            width: 85%; background: #f1c40f; color: #000;
+            border: none; padding: 15px; border-radius: 50px;
+            font-size: 18px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        /* نظام الـ 13 إحالة (العداد) */
-        .milestone-card {
-            width: 85%; background: #192734;
-            padding: 20px; border-radius: 15px;
-            text-align: center; margin-bottom: 80px;
+        /* شريط التقدم (الـ 13 إحالة) */
+        .progress-box {
+            width: 85%; background: #1a2730;
+            margin-top: 25px; padding: 15px; border-radius: 12px;
         }
-        .progress-text { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .bar-bg { background: #38444d; height: 10px; border-radius: 5px; }
-        .bar-fill { background: #f1c40f; height: 100%; width: 30%; border-radius: 5px; transition: 1s; }
-
-        /* الناف بار اللي تحت */
-        .bottom-nav {
-            position: fixed; bottom: 0; width: 100%;
-            background: #15202b; display: flex;
-            justify-content: space-around; padding: 12px 0;
-            border-top: 1px solid #38444d;
+        .bar-container {
+            background: #2c3e50; height: 12px; border-radius: 10px;
+            margin: 10px 0; overflow: hidden;
         }
-        .nav-item { color: #8899a6; text-decoration: none; font-size: 12px; text-align: center; }
-        .nav-item.active { color: #f1c40f; }
+        .bar-fill {
+            background: #f1c40f; height: 100%; width: 0%; /* دي هتتغير بالـ JS */
+            transition: 1s;
+        }
     </style>
 </head>
 <body>
 
-    <div class="user-card">
-        <div>
-            <span class="balance-title">رصيدك الحالي</span><br>
-            <span class="balance-amount">0.00 ج.م</span>
+    <div class="top-card">
+        <div class="row">
+            <span>الرصيد المتاح</span>
+            <span class="gold">0.00 ج.م</span>
         </div>
-        <div style="text-align: left;">
-            <span class="balance-title">الإحالات</span><br>
+        <div class="row" style="margin-top: 10px;">
+            <span>إجمالي الإحالات</span>
             <span style="font-weight: bold;">0</span>
         </div>
     </div>
 
-    <div class="wheel-container">
-        <img src="https://i.ibb.co/vYV8xK6/wheel-pointer.png" class="pointer">
-        <img src="https://i.ibb.co/m0fXGkS/lucky-wheel.png" id="main-wheel">
-    </div>
+    <div class="wheel-space" id="wheel">🎡</div>
 
-    <button class="spin-btn" onclick="doSpin()">لف العجلة الآن</button>
+    <button class="main-btn" onclick="spinWheel()">لف العجلة مجاناً</button>
 
-    <div class="milestone-card">
-        <div class="progress-text">
-            <span>المستوى الأول: 13 عضو</span>
+    <div class="progress-box">
+        <div class="row">
+            <span style="font-size: 14px;">المرحلة 1: دعوة 13 صديق</span>
             <span style="color: #f1c40f;">0/13</span>
         </div>
-        <div class="bar-bg">
-            <div class="bar-fill" id="progress-bar" style="width: 0%;"></div>
+        <div class="bar-container">
+            <div class="bar-fill" id="fill"></div>
         </div>
-        <p style="font-size: 11px; color: #8899a6; margin-top: 10px;">ادعو 13 صديق لفتح السحب والحصول على 10 جنيه</p>
-    </div>
-
-    <div class="bottom-nav">
-        <a href="#" class="nav-item active">🏠 الرئيسية</a>
-        <a href="#" class="nav-item">🤝 الإحالات</a>
-        <a href="#" class="nav-item">💳 السحب</a>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.headerColor = "#15202b";
 
-        function doSpin() {
-            let wheel = document.getElementById('main-wheel');
-            let deg = Math.floor(5000 + Math.random() * 5000);
-            wheel.style.transform = `rotate(${deg}deg)`;
+        function spinWheel() {
+            let w = document.getElementById('wheel');
+            w.style.transition = "transform 3s ease-out";
+            w.style.transform = "rotate(1080deg)";
             
             setTimeout(() => {
-                tg.showPopup({
-                    title: 'محاولة قريبة!',
-                    message: 'جمع 13 إحالة أولاً لتفعيل جوائز العجلة حقيقياً.',
-                    buttons: [{type: 'ok'}]
-                });
-            }, 4100);
+                tg.showAlert("عفواً! يجب إكمال 13 إحالة أولاً لتفعيل الجوائز الحقيقية.");
+                w.style.transition = "none";
+                w.style.transform = "rotate(0deg)";
+            }, 3200);
         }
     </script>
 </body>
